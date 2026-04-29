@@ -2,40 +2,29 @@ async function pingRingba() {
     const cid = document.getElementById('cid').value;
     const zip = document.getElementById('zipcode').value;
     const statusDiv = document.getElementById('status');
-    
-    if (!cid || !zip) {
-        alert("Please enter both Phone and Zip");
-        return;
-    }
 
     statusDiv.style.display = "block";
-    statusDiv.innerHTML = "Connecting to Ringba...";
-    statusDiv.className = "";
+    statusDiv.innerHTML = "Sending ping...";
 
-    const baseUrl = "https://rtb.ringba.com/v1/production/618e2f522f3a467791b46a25f3f33cc5.json";
-    const queryParams = `?CID=${cid}&zipcode=${zip}&subid=yes&exposeCallerid=yes`;
-    
-    // We wrap the URL in a CORS proxy to bypass the browser block
-    const proxiedUrl = "https://corsproxy.io/?" + encodeURIComponent(baseUrl + queryParams);
+    const url = `https://rtb.ringba.com/v1/production/618e2f522f3a467791b46a25f3f33cc5.json?CID=${cid}&zipcode=${zip}&subid=yes&exposeCallerid=yes`;
 
     try {
-        const response = await fetch(proxiedUrl);
-        
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        const data = await response.json();
+        await fetch(url, {
+            method: 'GET',
+            mode: 'no-cors', // This tells the browser not to panic about CORS
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
 
-        // Standard Ringba RTB check
-        if (data && data.bid > 0) {
-            statusDiv.className = "success";
-            statusDiv.innerHTML = `<strong>Lead Qualified!</strong><br>Potential Payout: $${data.bid}`;
-        } else {
-            statusDiv.className = "error";
-            statusDiv.innerHTML = "No buyers available or lead already exists.";
-        }
+        // Because of 'no-cors', we can't actually read the response body.
+        // We can only assume it sent correctly if the promise didn't fail.
+        statusDiv.className = "success";
+        statusDiv.innerHTML = "Ping sent successfully! (Check Ringba reporting for bid details)";
+        
     } catch (error) {
         statusDiv.className = "error";
-        statusDiv.innerHTML = "Error: Could not reach the server. Please check your connection or contact support.";
-        console.error("CORS/Fetch Error:", error);
+        statusDiv.innerHTML = "Failed to send ping.";
+        console.error(error);
     }
 }
