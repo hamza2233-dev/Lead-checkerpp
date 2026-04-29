@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Verification Portal</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding: 40px; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h2 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .tcpa { font-size: 11px; color: #666; line-height: 1.4; margin-bottom: 20px; border-left: 3px solid #007bff; padding-left: 10px; }
+        button { width: 100%; background: #007bff; color: white; padding: 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        #status { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Medicare Lead Ping</h2>
+    
+    <label for="cid">Caller ID (Phone Number)</label>
+    <input type="text" id="cid" placeholder="6618296221" required>
+
+    <label for="zipcode">Zip Code</label>
+    <input type="text" id="zipcode" placeholder="90210" required>
+
+    <div class="tcpa">
+        By clicking submit, I provide express written consent to be contacted at the number provided above even if I am on a DNC list. I understand consent is not a condition of purchase.
+    </div>
+
+    <button onclick="pingRingba()">Check Lead Availability</button>
+
+    <div id="status"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
