@@ -3,35 +3,39 @@ async function pingRingba() {
     const zip = document.getElementById('zipcode').value;
     const statusDiv = document.getElementById('status');
     
-    // Validate inputs
     if (!cid || !zip) {
         alert("Please enter both Phone and Zip");
         return;
     }
 
     statusDiv.style.display = "block";
-    statusDiv.innerHTML = "Pinging Buyer...";
+    statusDiv.innerHTML = "Connecting to Ringba...";
     statusDiv.className = "";
 
-    // Your Ringba RTB URL
     const baseUrl = "https://rtb.ringba.com/v1/production/618e2f522f3a467791b46a25f3f33cc5.json";
-    const fullUrl = `${baseUrl}?CID=${cid}&zipcode=${zip}&subid=yes&exposeCallerid=yes`;
+    const queryParams = `?CID=${cid}&zipcode=${zip}&subid=yes&exposeCallerid=yes`;
+    
+    // We wrap the URL in a CORS proxy to bypass the browser block
+    const proxiedUrl = "https://corsproxy.io/?" + encodeURIComponent(baseUrl + queryParams);
 
     try {
-        const response = await fetch(fullUrl);
+        const response = await fetch(proxiedUrl);
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
         const data = await response.json();
 
-        // Checking if the response has a bid or success
+        // Standard Ringba RTB check
         if (data && data.bid > 0) {
             statusDiv.className = "success";
-            statusDiv.innerHTML = `<strong>Lead Qualified!</strong><br>Bid Price: $${data.bid}`;
+            statusDiv.innerHTML = `<strong>Lead Qualified!</strong><br>Potential Payout: $${data.bid}`;
         } else {
             statusDiv.className = "error";
-            statusDiv.innerHTML = "No active buyers for this lead at the moment.";
+            statusDiv.innerHTML = "No buyers available or lead already exists.";
         }
     } catch (error) {
         statusDiv.className = "error";
-        statusDiv.innerHTML = "Connection Error. Check if CORS is allowed on the Ringba endpoint.";
-        console.error("Error:", error);
+        statusDiv.innerHTML = "Error: Could not reach the server. Please check your connection or contact support.";
+        console.error("CORS/Fetch Error:", error);
     }
 }
